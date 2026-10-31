@@ -3,7 +3,7 @@ requires = ["setuptools>=64"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "quotecheck"
+name = "quotecheck-mcp"
 version = "0.1.0"
 description = "Verify that a quoted passage actually appears, word for word, in its cited source."
 readme = "README.md"
@@ -27,6 +27,7 @@ quotecheck = "quotecheck.cli:main"
 quotecheck-mcp = "quotecheck.mcp_server:main"
 
 [project.urls]
+Homepage = "https://github.com/feenmile/quotecheck"
 Source = "https://github.com/feenmile/quotecheck"
 
 [tool.setuptools.packages.find]

@@ -1,0 +1,32 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "io.github.feenmile/quotecheck",
+  "title": "quotecheck",
+  "description": "Check that a quoted passage appears word for word in its cited source (URL, DOI or PubMed ID).",
+  "repository": {
+    "url": "https://github.com/feenmile/quotecheck",
+    "source": "github",
+    "id": "1440497887"
+  },
+  "version": "0.1.0",
+  "packages": [
+    {
+      "registryType": "pypi",
+      "registryBaseUrl": "https://pypi.org",
+      "identifier": "quotecheck-mcp",
+      "version": "0.1.0",
+      "runtimeHint": "uvx",
+      "runtimeArguments": [
+        {
+          "type": "named",
+          "name": "--with",
+          "value": "mcp>=1.2",
+          "description": "The MCP SDK, which the quotecheck-mcp command needs (the package's optional 'mcp' extra)."
+        }
+      ],
+      "transport": {
+        "type": "stdio"
+      }
+    }
+  ]
+}

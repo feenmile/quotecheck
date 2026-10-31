@@ -21,6 +21,8 @@ $ quotecheck "Mulberry trees" "https://en.wikipedia.org/wiki/Morus_(plant)"
 
 Built by Feenmile.
 
+<!-- mcp-name: io.github.feenmile/quotecheck -->
+
 ## Verdicts
 
 | status | meaning |
@@ -46,11 +48,12 @@ Use the returned `snippet` as the quotation, or rephrase as a paraphrase.
 
 ## Install
 
-Not yet published on PyPI. From a clone of this repository:
+The PyPI distribution is named `quotecheck-mcp`; the import package and the
+command are still `quotecheck`.
 
 ```console
-pip install .            # library + CLI, no dependencies
-pip install ".[mcp]"     # also the MCP server (needs the official mcp SDK)
+pip install quotecheck-mcp            # library + CLI, no dependencies
+pip install "quotecheck-mcp[mcp]"     # also the MCP server (needs the official mcp SDK)
 ```
 
 Python 3.10 or newer.

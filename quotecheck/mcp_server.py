@@ -1,6 +1,6 @@
 """MCP server (stdio) exposing one tool: ``check_quote(quote, source)``.
 
-Requires the optional ``mcp`` extra: ``pip install "quotecheck[mcp]"``.
+Requires the optional ``mcp`` extra: ``pip install "quotecheck-mcp[mcp]"``.
 The core library does not import this module.
 """
 
@@ -54,7 +54,7 @@ def main() -> int:
     try:
         server = build_server()
     except ImportError:
-        print('quotecheck-mcp needs the MCP SDK: pip install "quotecheck[mcp]"', file=sys.stderr)
+        print('quotecheck-mcp needs the MCP SDK: pip install "quotecheck-mcp[mcp]"', file=sys.stderr)
         return 1
     server.run()  # stdio transport
     return 0
