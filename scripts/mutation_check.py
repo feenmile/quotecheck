@@ -19,8 +19,8 @@ import sys
 import tempfile
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-GUARD_LINE = "    if not _is_public_address(addr):\n"
-MUTANT_LINE = "    if False:  # MUTATION: SSRF guard disabled\n"
+GUARD_LINE = "    if not _is_public_address(addr):"
+MUTANT_LINE = "    if False:  # MUTATION: SSRF guard disabled"
 
 
 def copy_project(dest: str) -> str:
