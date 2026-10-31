@@ -32,6 +32,8 @@ PMID_TEXT = (
 )
 
 BIG_SIZE = 5 * 1024 * 1024 + 1
+# A small gzip body that inflates past the 5 MB cap: only the after-decompression check can refuse it.
+GZIP_BOMB = gzip.compress(b"a" * (2 * BIG_SIZE))
 
 
 class _Handler(BaseHTTPRequestHandler):
@@ -83,6 +85,8 @@ class _Handler(BaseHTTPRequestHandler):
         elif path == "/gzip":
             self._send(200, gzip.compress(ARTICLE_HTML.encode("utf-8")),
                        extra={"Content-Encoding": "gzip"})
+        elif path == "/gzip-bomb":
+            self._send(200, GZIP_BOMB, "text/plain", extra={"Content-Encoding": "gzip"})
         elif path == "/pdf":
             self._send(200, b"%PDF-1.4\n%fake\n", "application/pdf")
         elif path == "/js-only":

@@ -1,10 +1,13 @@
-"""Mutation check: prove the test suite notices a disabled SSRF guard.
+"""Mutation check: prove the test suite notices a disabled guard.
 
-1. Copy the project (without .git) to two temporary directories.
+1. Copy the project (without .git) to a temporary directory.
 2. Baseline copy: run the tests unchanged; they must pass.
-3. Mutant copy: replace the address check in quotecheck/fetch.py with a
-   no-op (exactly one replacement, or the script fails), run the tests,
-   and require at least one failure.
+3. For each mutant, a fresh copy: disable one guard in quotecheck/fetch.py
+   (each edited text must appear exactly once, or the script fails), run
+   the tests, and require at least one failure.
+
+Mutants: the SSRF address guard, and the size cap applied after
+decompression (both its bounded read and its check).
 
 Usage: python scripts/mutation_check.py
 """
@@ -19,8 +22,20 @@ import sys
 import tempfile
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-GUARD_LINE = "    if not _is_public_address(addr):"
-MUTANT_LINE = "    if False:  # MUTATION: SSRF guard disabled"
+MUTANTS = [
+    (
+        "SSRF guard disabled",
+        [("    if not _is_public_address(addr):",
+          "    if False:  # MUTATION: SSRF guard disabled")],
+    ),
+    (
+        "size cap after decompression removed",
+        [("out = zlib.decompressobj(wbits).decompress(body, max_bytes + 1)",
+          "out = zlib.decompressobj(wbits).decompress(body)  # MUTATION"),
+         ("            if len(out) > max_bytes:",
+          "            if False:  # MUTATION: no cap after decompression")],
+    ),
+]
 
 
 def copy_project(dest: str) -> str:
@@ -47,27 +62,32 @@ def main() -> int:
             print(base.stderr, file=sys.stderr)
             return 2
 
-        mutant = copy_project(os.path.join(tmp, "mutant"))
-        fetch_py = os.path.join(mutant, "quotecheck", "fetch.py")
-        with open(fetch_py, encoding="utf-8", newline="") as fh:
-            src = fh.read()
-        count = src.count(GUARD_LINE)
-        if count != 1:
-            print(f"expected exactly one guard line, found {count}", file=sys.stderr)
-            return 2
-        with open(fetch_py, "w", encoding="utf-8", newline="") as fh:
-            fh.write(src.replace(GUARD_LINE, MUTANT_LINE))
+        worst = 0
+        for i, (name, edits) in enumerate(MUTANTS):
+            mutant = copy_project(os.path.join(tmp, f"mutant{i}"))
+            fetch_py = os.path.join(mutant, "quotecheck", "fetch.py")
+            with open(fetch_py, encoding="utf-8", newline="") as fh:
+                src = fh.read()
+            for old, new in edits:
+                count = src.count(old)
+                if count != 1:
+                    print(f"{name}: expected exactly one {old.strip()!r}, found {count}", file=sys.stderr)
+                    return 2
+                src = src.replace(old, new)
+            with open(fetch_py, "w", encoding="utf-8", newline="") as fh:
+                fh.write(src)
 
-        mut = run_tests(mutant)
-        failed = sorted(set(re.findall(r"^(?:FAIL|ERROR): (\S+ \([^)]*\))", mut.stderr, re.M)))
-        print(f"mutant:   exit {mut.returncode}; {mut.stderr.strip().splitlines()[-1]}")
-        for name in failed:
-            print(f"  failed: {name}")
-        if mut.returncode == 0:
-            print("MUTANT SURVIVED: disabling the SSRF guard did not fail any test", file=sys.stderr)
-            return 1
-        print("MUTANT KILLED: disabling the SSRF guard fails the suite")
-        return 0
+            mut = run_tests(mutant)
+            failed = sorted(set(re.findall(r"^(?:FAIL|ERROR): (\S+ \([^)]*\))", mut.stderr, re.M)))
+            print(f"mutant ({name}): exit {mut.returncode}; {mut.stderr.strip().splitlines()[-1]}")
+            for test in failed:
+                print(f"  failed: {test}")
+            if mut.returncode == 0:
+                print(f"MUTANT SURVIVED: {name} did not fail any test", file=sys.stderr)
+                worst = 1
+            else:
+                print(f"MUTANT KILLED: {name} fails the suite")
+        return worst
 
 
 if __name__ == "__main__":

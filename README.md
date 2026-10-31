@@ -114,7 +114,7 @@ quotecheck fetches URLs that came from model output, so it treats them as untrus
 - the same checks run again on every redirect, with at most 5 redirects;
 - one 15 second deadline covers the whole fetch, and the body is capped at
   5 MB (declared, streamed and after decompression);
-- requests identify as `quotecheck/0.1 (+https://github.com/feenmile/quotecheck)`;
+- requests identify as `quotecheck/0.1 (+https://feenmile.com)`;
 - proxy environment variables are not used.
 
 ## Limits (v0.1)

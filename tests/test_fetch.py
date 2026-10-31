@@ -21,7 +21,7 @@ from quotecheck import fetch as fetch_mod
 from quotecheck._testing import allow_loopback_endpoints
 from quotecheck.fetch import PDF_REASON, USER_AGENT, resolve_source
 
-from .fixture_server import FixtureServer
+from .fixture_server import GZIP_BOMB, FixtureServer
 
 GUARD_TEXT = "not a public address"
 
@@ -64,7 +64,7 @@ class ContentTests(FetchTestBase):
         self.assertEqual(fetch_mod.MAX_BYTES, 5 * 1024 * 1024)
         self.assertEqual(fetch_mod.DEFAULT_TIMEOUT, 15.0)
         self.assertEqual(fetch_mod.MAX_REDIRECTS, 5)
-        self.assertEqual(USER_AGENT, "quotecheck/0.1 (+https://github.com/feenmile/quotecheck)")
+        self.assertEqual(USER_AGENT, "quotecheck/0.1 (+https://feenmile.com)")
 
     def test_exact_match_with_offsets(self):
         url = self.a.base + "/article"
@@ -142,6 +142,14 @@ class LimitTests(FetchTestBase):
         r = check(self.a.base + "/big-stream", "a")
         self.assertEqual(r.status, Status.SOURCE_UNAVAILABLE)
         self.assertIn("too large", r.reason)
+
+    def test_oversize_after_decompression_refused(self):
+        # The compressed body is far under the cap (declared and streamed checks pass);
+        # only the cap applied after decompression can refuse it.
+        self.assertLess(len(GZIP_BOMB), fetch_mod.MAX_BYTES // 100)
+        r = check(self.a.base + "/gzip-bomb", "aaaa")
+        self.assertEqual(r.status, Status.SOURCE_UNAVAILABLE)
+        self.assertIn("too large after decompression", r.reason)
 
     def test_timeout(self):
         t0 = time.monotonic()

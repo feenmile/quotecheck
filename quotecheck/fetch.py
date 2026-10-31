@@ -31,7 +31,7 @@ from urllib.parse import quote, urldefrag, urljoin, urlsplit
 
 from .htmltext import html_to_text, tidy
 
-USER_AGENT = "quotecheck/0.1 (+https://github.com/feenmile/quotecheck)"
+USER_AGENT = "quotecheck/0.1 (+https://feenmile.com)"
 MAX_BYTES = 5 * 1024 * 1024
 DEFAULT_TIMEOUT = 15.0
 MAX_REDIRECTS = 5
