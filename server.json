@@ -8,19 +8,19 @@
     "source": "github",
     "id": "1440497887"
   },
-  "version": "0.1.0",
+  "version": "0.1.1",
   "packages": [
     {
       "registryType": "pypi",
       "registryBaseUrl": "https://pypi.org",
       "identifier": "quotecheck-mcp",
-      "version": "0.1.0",
+      "version": "0.1.1",
       "runtimeHint": "uvx",
       "runtimeArguments": [
         {
           "type": "named",
           "name": "--with",
-          "value": "mcp>=1.2",
+          "value": "mcp>=1.2,<2",
           "description": "The MCP SDK, which the quotecheck-mcp command needs (the package's optional 'mcp' extra)."
         }
       ],

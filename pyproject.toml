@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "quotecheck-mcp"
-version = "0.1.0"
+version = "0.1.1"
 description = "Verify that a quoted passage actually appears, word for word, in its cited source."
 readme = "README.md"
 license = { text = "MIT" }
@@ -20,7 +20,7 @@ classifiers = [
 ]
 
 [project.optional-dependencies]
-mcp = ["mcp>=1.2"]
+mcp = ["mcp>=1.2,<2"]
 
 [project.scripts]
 quotecheck = "quotecheck.cli:main"
